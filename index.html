@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBSTU Dormitory | University Hall Accommodation &amp; Dining System</title>
+  <link rel="icon" type="image/png" href="MBSTU_logo.png">
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom Minimalist CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+        <img src="MBSTU_logo.png" alt="MBSTU Logo" class="brand-logo">
+        <div>
+          <span class="fw-bold text-dark fs-5">MBSTU</span>
+          <span class="text-primary fw-bold fs-5">Dormitory</span>
+          <small class="d-block text-muted" style="font-size: 0.72rem; line-height: 1;">Smart Dormitory Portal</small>
+        </div>
+      </a>
+
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#halls-directory">Halls Directory</a></li>
+          <li class="nav-item"><a class="nav-link" href="seat-application.html">Seat Availability</a></li>
+          <li class="nav-item"><a class="nav-link" href="meal-tokens.html">3x Meal Tokens</a></li>
+          <li class="nav-item"><a class="nav-link" href="notice-board.html">Notices</a></li>
+        </ul>
+
+        <div id="navbar-auth-container" class="d-flex align-items-center gap-2">
+          <a href="login.html" class="btn btn-outline-primary btn-sm px-3 rounded-pill">
+            Login
+          </a>
+          <a href="register.html" class="btn btn-primary btn-sm px-3 rounded-pill shadow-sm">
+            Register
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="py-5 bg-white border-bottom">
+    <div class="container py-2">
+      <div class="row align-items-center gy-4">
+        <div class="col-lg-7">
+          <span class="badge bg-light text-dark border mb-3 px-3 py-1 fw-medium">Residential Hall Portal &bull; MBSTU</span>
+          <h1 class="display-5 fw-bold text-dark mb-3">
+            University Hall Management &amp; Dining System
+          </h1>
+          <p class="text-secondary mb-4" style="max-width: 600px;">
+            A unified digital portal for students and hall authorities of Mawlana Bhashani Science and Technology University. Real-time seat allocation tracking, digital 3-times daily meal tokens, and administrative governance.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="meal-tokens.html" class="btn btn-primary px-4 rounded-pill">
+              Book Meal Token
+            </a>
+            <a href="seat-application.html" class="btn btn-outline-secondary px-4 rounded-pill">
+              View Seat Matrix
+            </a>
+            <a href="login.html" class="btn btn-light border px-3 rounded-pill">
+              Authority Login
+            </a>
+          </div>
+
+          <!-- Subtle Stats Row -->
+          <div class="row g-3 pt-2 text-secondary small border-top">
+            <div class="col-sm-4">
+              <strong class="text-dark d-block">7 Halls of Residence</strong>
+              <span>4 Male &bull; 3 Female</span>
+            </div>
+            <div class="col-sm-4">
+              <strong class="text-dark d-block">3 Daily Meal Cycles</strong>
+              <span>Morning, Noon &amp; Night</span>
+            </div>
+            <div class="col-sm-4">
+              <strong class="text-dark d-block">@mbstu.acu.bd</strong>
+              <span>Verified Institutional Access</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today Dining Schedule Card (Clean 2-color styling) -->
+        <div class="col-lg-5">
+          <div class="premium-card p-4 bg-white border">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+              <div>
+                <span class="text-muted small d-block">Mess Schedule</span>
+                <h5 class="fw-bold mb-0 text-dark">Daily Dining Cycles</h5>
+              </div>
+              <span class="text-muted small" id="live-today-date">Today</span>
+            </div>
+
+            <div class="d-flex flex-column gap-2 mb-3">
+              <div class="p-3 bg-light rounded border">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Morning Breakfast</h6>
+                    <small class="text-muted">Paratha / Khichuri, Egg, Hot Tea</small>
+                  </div>
+                  <div class="text-end">
+                    <span class="fw-bold text-dark">25 ৳</span>
+                    <small class="d-block text-muted">07:30 - 09:30 AM</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 bg-light rounded border">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Noon Lunch</h6>
+                    <small class="text-muted">Steamed Rice, Fresh Fish / Chicken, Daal</small>
+                  </div>
+                  <div class="text-end">
+                    <span class="fw-bold text-dark">50 ৳</span>
+                    <small class="d-block text-muted">01:00 - 03:00 PM</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 bg-light rounded border">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Night Dinner</h6>
+                    <small class="text-muted">Rice, Beef Bhuna / Egg, Daal</small>
+                  </div>
+                  <div class="text-end">
+                    <span class="fw-bold text-dark">55 ৳</span>
+                    <small class="d-block text-muted">08:00 - 10:00 PM</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <a href="meal-tokens.html" class="btn btn-outline-primary rounded-pill py-2">
+                Generate Digital Token
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Key Statistics Banner (Clean) -->
+  <section class="py-4 bg-white border-bottom">
+    <div class="container">
+      <div class="row g-3 text-center">
+        <div class="col-6 col-md-3">
+          <div class="p-2">
+            <h3 class="fw-bold text-dark mb-0" id="stat-capacity">2,920</h3>
+            <small class="text-muted">Total Hall Capacity</small>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-2">
+            <h3 class="fw-bold text-dark mb-0" id="stat-available">257</h3>
+            <small class="text-muted">Available Seats</small>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-2">
+            <h3 class="fw-bold text-dark mb-0" id="stat-tokens">1,480</h3>
+            <small class="text-muted">Daily Meals Served</small>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-2">
+            <h3 class="fw-bold text-dark mb-0" id="stat-occupancy">91%</h3>
+            <small class="text-muted">Average Occupancy</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Halls Directory Section -->
+  <section id="halls-directory" class="py-5 bg-light">
+    <div class="container py-2">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
+        <div>
+          <span class="badge bg-light text-dark border mb-1">Residential Facilities</span>
+          <h3 class="fw-bold text-dark mb-0">MBSTU Halls of Residence</h3>
+          <p class="text-muted small mb-0">Review capacity and seat vacancy across halls.</p>
+        </div>
+
+        <!-- Gender Filter Tabs -->
+        <ul class="nav nav-pills mt-3 mt-md-0 bg-white p-1 rounded-pill border" id="hallTabs" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active rounded-pill px-3 py-1 small" id="all-tab" data-bs-toggle="pill" data-bs-target="#all-halls" type="button">All Halls (7)</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link rounded-pill px-3 py-1 small" id="male-tab" data-bs-toggle="pill" data-bs-target="#male-halls" type="button">Male Halls (4)</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link rounded-pill px-3 py-1 small" id="female-tab" data-bs-toggle="pill" data-bs-target="#female-halls" type="button">Female Halls (3)</button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content" id="hallTabsContent">
+        <div class="tab-pane fade show active" id="all-halls">
+          <div class="row g-4" id="all-halls-grid"></div>
+        </div>
+        <div class="tab-pane fade" id="male-halls">
+          <div class="row g-4" id="male-halls-grid"></div>
+        </div>
+        <div class="tab-pane fade" id="female-halls">
+          <div class="row g-4" id="female-halls-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Notices Section -->
+  <section class="py-5 bg-white border-top">
+    <div class="container py-2">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <span class="badge bg-light text-dark border mb-1">Notice Board</span>
+          <h4 class="fw-bold text-dark mb-0">Recent Announcements</h4>
+        </div>
+        <a href="notice-board.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+          View All Notices
+        </a>
+      </div>
+
+      <div class="row g-3" id="home-notices-container"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="custom-footer mt-auto">
+    <div class="container">
+      <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+          <h5 class="fw-bold text-white mb-2">MBSTU Dormitory</h5>
+          <p class="small text-muted mb-3">
+            Web Application Development Final Lab Project. Client-side application developed with HTML, CSS, JavaScript, JSON, and Bootstrap.
+          </p>
+          <div class="d-flex gap-2">
+            <span class="badge bg-secondary">HTML5</span>
+            <span class="badge bg-secondary">CSS3</span>
+            <span class="badge bg-secondary">JavaScript</span>
+            <span class="badge bg-secondary">Bootstrap</span>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-2">
+          <h6 class="text-white fw-bold mb-3">Male Halls</h6>
+          <ul class="list-unstyled small">
+            <li class="mb-1"><a href="seat-application.html?hall=jamh">Abdul Mannan Hall</a></li>
+            <li class="mb-1"><a href="seat-application.html?hall=sohh">Osman Hadi Hall</a></li>
+            <li class="mb-1"><a href="seat-application.html?hall=szrh">Ziaur Rahman Hall</a></li>
+            <li class="mb-1"><a href="seat-application.html?hall=safh">Abrar Fahad Hall</a></li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-lg-2">
+          <h6 class="text-white fw-bold mb-3">Female Halls</h6>
+          <ul class="list-unstyled small">
+            <li class="mb-1"><a href="seat-application.html?hall=akbh">Alema Khatun Hall</a></li>
+            <li class="mb-1"><a href="seat-application.html?hall=sjjih">Jahanara Imam Hall</a></li>
+            <li class="mb-1"><a href="seat-application.html?hall=bfzh">Fazilatunnessa Hall</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4">
+          <h6 class="text-white fw-bold mb-3">Database Actions</h6>
+          <div class="d-flex flex-column gap-2">
+            <button onclick="DB.exportJSON()" class="btn btn-outline-secondary btn-sm rounded-pill text-start px-3">
+              Export JSON Database
+            </button>
+            <button onclick="if(confirm('Reset all demo data back to defaults?')) { DB.reset().then(() => location.reload()); }" class="btn btn-outline-danger btn-sm rounded-pill text-start px-3">
+              Reset Demo Database
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-top border-secondary pt-3 d-flex flex-column flex-md-row justify-content-between align-items-center small text-muted">
+        <div>&copy; 2026 Mawlana Bhashani Science and Technology University (MBSTU).</div>
+        <div class="mt-2 mt-md-0">
+          <span>Web Application Development Final Lab Project</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await DB.init();
+      renderStats();
+      renderHalls();
+      renderNotices();
+
+      const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+      document.getElementById('live-today-date').innerText = new Date().toLocaleDateString('en-US', options);
+    });
+
+    function renderStats() {
+      const stats = DB.getGlobalStats();
+      document.getElementById('stat-capacity').innerText = stats.totalCapacity.toLocaleString();
+      document.getElementById('stat-available').innerText = stats.totalAvailable.toLocaleString();
+      document.getElementById('stat-occupancy').innerText = `${stats.occupancyPercent}%`;
+    }
+
+    function renderHalls() {
+      const halls = DB.getHalls();
+      const allContainer = document.getElementById('all-halls-grid');
+      const maleContainer = document.getElementById('male-halls-grid');
+      const femaleContainer = document.getElementById('female-halls-grid');
+
+      allContainer.innerHTML = '';
+      maleContainer.innerHTML = '';
+      femaleContainer.innerHTML = '';
+
+      halls.forEach(h => {
+        const isMale = h.gender === 'Male';
+        const cardHtml = `
+          <div class="col-md-6 col-lg-4">
+            <div class="premium-card h-100 overflow-hidden d-flex flex-column">
+              <div class="p-3 d-flex flex-column flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="fw-bold mb-0 text-dark">${h.name}</h5>
+                  <span class="badge bg-light text-dark border small">${h.gender}</span>
+                </div>
+                <p class="small text-muted mb-2">Provost: ${h.provost}</p>
+                <p class="small text-secondary mb-3 flex-grow-1 line-clamp-2">${h.description}</p>
+                
+                <div class="bg-light p-2 rounded border mb-3">
+                  <div class="d-flex justify-content-between small mb-1">
+                    <span class="text-muted">Occupancy:</span>
+                    <span class="fw-bold">${h.occupied} / ${h.capacity}</span>
+                  </div>
+                  <div class="progress" style="height: 5px;">
+                    <div class="progress-bar bg-dark" role="progressbar" style="width: ${Math.round((h.occupied/h.capacity)*100)}%;"></div>
+                  </div>
+                  <div class="d-flex justify-content-between small mt-1">
+                    <span class="text-dark fw-medium">${h.available} Available</span>
+                    <span class="text-muted">${h.totalRooms} Rooms</span>
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <a href="seat-application.html?hall=${h.id}" class="btn btn-outline-secondary btn-sm flex-grow-1 rounded-pill">
+                    View Seats
+                  </a>
+                  <a href="meal-tokens.html?hall=${h.id}" class="btn btn-primary btn-sm flex-grow-1 rounded-pill">
+                    Book Token
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        allContainer.insertAdjacentHTML('beforeend', cardHtml);
+        if (isMale) {
+          maleContainer.insertAdjacentHTML('beforeend', cardHtml);
+        } else {
+          femaleContainer.insertAdjacentHTML('beforeend', cardHtml);
+        }
+      });
+    }
+
+    function renderNotices() {
+      const notices = DB.getNotices().slice(0, 3);
+      const container = document.getElementById('home-notices-container');
+      container.innerHTML = '';
+
+      notices.forEach(n => {
+        const itemHtml = `
+          <div class="col-md-4">
+            <div class="premium-card p-3 h-100 bg-white">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-light text-dark border small">${n.category}</span>
+                <small class="text-muted">${n.publishDate}</small>
+              </div>
+              <h6 class="fw-bold text-dark mb-2">${n.title}</h6>
+              <p class="small text-secondary mb-2 line-clamp-3">${n.content}</p>
+              <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                <small class="text-muted">${n.hallName}</small>
+                <a href="notice-board.html" class="small fw-semibold text-primary">Read More</a>
+              </div>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', itemHtml);
+      });
+    }
+  </script>
+</body>
+</html>

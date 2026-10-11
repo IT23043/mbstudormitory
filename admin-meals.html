@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dining Counter &amp; Mess Management | MBSTU Dormitory</title>
+  <link rel="icon" type="image/png" href="MBSTU_logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Admin Navbar -->
+  <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="admin-dashboard.html">
+        <img src="MBSTU_logo.png" alt="MBSTU Logo" class="brand-logo">
+        <div>
+          <span class="fw-bold text-dark fs-5">MBSTU</span>
+          <span class="text-primary fw-bold fs-5">Dormitory</span>
+          <small class="d-block text-muted" style="font-size: 0.72rem;">Dining &amp; Mess Manager</small>
+        </div>
+      </a>
+
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mealNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mealNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Overview</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-seats.html">Seat Allocations</a></li>
+          <li class="nav-item"><a class="nav-link active" href="admin-meals.html">Dining Counter</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-notices.html">Circulars</a></li>
+        </ul>
+
+        <div id="navbar-auth-container"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-4">
+    <div class="container">
+
+      <!-- Header Banner -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+          <span class="badge bg-light text-dark border mb-1">
+            Mess Governance
+          </span>
+          <h2 class="fw-bold text-dark mb-0">Dining Counter &amp; Meal Token Verifier</h2>
+          <p class="text-muted small mb-0">Live token redemption counter and kitchen headcounts for morning, noon, and night.</p>
+        </div>
+
+        <div>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="DB.exportJSON()">
+            Export Dining Roster
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Counter Verification Card (Clean White/Border) -->
+      <div class="premium-card p-4 bg-white mb-4">
+        <div class="row align-items-center gy-3">
+          <div class="col-lg-6">
+            <h5 class="fw-bold text-dark mb-1">Dining Counter Token Verifier</h5>
+            <p class="small text-muted mb-3">Enter the Token ID presented by the student at the food line.</p>
+            
+            <form onsubmit="verifyTokenCounter(event)">
+              <div class="input-group">
+                <input type="text" id="verify-input-id" class="form-control font-mono" placeholder="e.g. TKN-20261011-001" required>
+                <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                  Verify &amp; Redeem
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-lg-6">
+            <div id="counter-result-card" class="p-3 bg-light text-dark rounded border d-none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kitchen Headcount Metrics -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="stat-widget">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted small fw-semibold">Morning Breakfast</span>
+              <span class="badge bg-light text-dark border">07:30 - 09:30 AM</span>
+            </div>
+            <h3 class="fw-bold text-dark mb-1" id="count-morning">0 Trays</h3>
+            <div class="small text-muted" id="sub-morning">Orders placed today</div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="stat-widget">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted small fw-semibold">Noon Lunch</span>
+              <span class="badge bg-light text-dark border">01:00 - 03:00 PM</span>
+            </div>
+            <h3 class="fw-bold text-dark mb-1" id="count-noon">0 Trays</h3>
+            <div class="small text-muted" id="sub-noon">Orders placed today</div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="stat-widget">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted small fw-semibold">Night Dinner</span>
+              <span class="badge bg-light text-dark border">08:00 - 10:00 PM</span>
+            </div>
+            <h3 class="fw-bold text-dark mb-1" id="count-night">0 Trays</h3>
+            <div class="small text-muted" id="sub-night">Orders placed today</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tokens Roster Table -->
+      <div class="premium-card p-4 bg-white mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+          <h5 class="fw-bold text-dark mb-0">Token Orders Log</h5>
+
+          <div class="d-flex flex-wrap gap-2">
+            <select class="form-select form-select-sm" id="table-filter-slot" onchange="renderTokensTable()" style="width: 130px;">
+              <option value="">All Slots</option>
+              <option value="Morning">Morning</option>
+              <option value="Noon">Noon</option>
+              <option value="Night">Night</option>
+            </select>
+
+            <select class="form-select form-select-sm" id="table-filter-status" onchange="renderTokensTable()" style="width: 130px;">
+              <option value="">All Statuses</option>
+              <option value="Active" selected>Active</option>
+              <option value="Redeemed">Redeemed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Token ID</th>
+                <th>Student Name</th>
+                <th>ID</th>
+                <th>Hall</th>
+                <th>Slot</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Redeemed Time</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tokens-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    let currentAdmin = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await DB.init();
+      currentAdmin = Auth.requireAuthority();
+      if (!currentAdmin) return;
+
+      renderKitchenCounts();
+      renderTokensTable();
+    });
+
+    function renderKitchenCounts() {
+      const today = new Date().toISOString().slice(0, 10);
+      const tokensToday = DB.getMealTokens({ date: today }).filter(t => t.status !== 'Cancelled');
+
+      const morning = tokensToday.filter(t => t.mealSlot === 'Morning');
+      const noon = tokensToday.filter(t => t.mealSlot === 'Noon');
+      const night = tokensToday.filter(t => t.mealSlot === 'Night');
+
+      document.getElementById('count-morning').innerText = `${morning.length} Trays`;
+      document.getElementById('count-noon').innerText = `${noon.length} Trays`;
+      document.getElementById('count-night').innerText = `${night.length} Trays`;
+
+      document.getElementById('sub-morning').innerText = `${morning.filter(t => t.status === 'Redeemed').length} served, ${morning.filter(t => t.status === 'Active').length} pending`;
+      document.getElementById('sub-noon').innerText = `${noon.filter(t => t.status === 'Redeemed').length} served, ${noon.filter(t => t.status === 'Active').length} pending`;
+      document.getElementById('sub-night').innerText = `${night.filter(t => t.status === 'Redeemed').length} served, ${night.filter(t => t.status === 'Active').length} pending`;
+    }
+
+    function renderTokensTable() {
+      const slotFilter = document.getElementById('table-filter-slot').value;
+      const statusFilter = document.getElementById('table-filter-status').value;
+
+      let tokens = DB.getMealTokens({ mealSlot: slotFilter, status: statusFilter });
+      const tbody = document.getElementById('tokens-table-body');
+      tbody.innerHTML = '';
+
+      if (tokens.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">No meal tokens found for selected filters.</td></tr>`;
+        return;
+      }
+
+      tokens.forEach(t => {
+        const isRedeemed = t.status === 'Redeemed';
+        const isCancelled = t.status === 'Cancelled';
+        const statusBadge = isRedeemed ? 'bg-secondary' : (isCancelled ? 'bg-light text-danger border' : 'bg-dark');
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="font-mono fw-bold">${t.tokenId}</td>
+            <td class="fw-semibold text-dark">${t.studentName}</td>
+            <td class="font-mono text-muted">${t.studentId}</td>
+            <td>${t.hallName}</td>
+            <td><span class="badge bg-light text-dark border">${t.mealSlot}</span></td>
+            <td>${t.date}</td>
+            <td><span class="badge ${statusBadge}">${t.status}</span></td>
+            <td class="fw-bold text-dark">${t.price} ৳</td>
+            <td class="small text-muted">${t.redeemedAt || '-'}</td>
+            <td>
+              ${(!isRedeemed && !isCancelled) ? `
+                <button class="btn btn-outline-dark btn-sm rounded-pill px-2 py-0" onclick="redeemTokenDirect('${t.tokenId}')">
+                  Redeem
+                </button>
+              ` : `
+                <span class="text-muted small">Done</span>
+              `}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function verifyTokenCounter(e) {
+      e.preventDefault();
+      const input = document.getElementById('verify-input-id');
+      const tokenId = input.value.trim();
+      const resCard = document.getElementById('counter-result-card');
+
+      try {
+        const token = DB.redeemMealToken(tokenId);
+        resCard.classList.remove('d-none');
+        resCard.innerHTML = `
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="badge bg-dark text-white rounded-pill px-2 py-1 mb-1 small">VERIFIED &amp; REDEEMED</span>
+              <h6 class="fw-bold mb-0 text-dark">${token.studentName} (${token.studentId})</h6>
+              <p class="small text-muted mb-0">
+                ${token.mealSlot} Meal Tray &bull; ${token.hallName} &bull; Paid: ${token.price} ৳
+              </p>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="this.closest('#counter-result-card').classList.add('d-none')">Dismiss</button>
+          </div>
+        `;
+        input.value = '';
+        renderKitchenCounts();
+        renderTokensTable();
+        App.toast(`Food tray issued for ${token.studentName}!`, 'success');
+      } catch (err) {
+        resCard.classList.remove('d-none');
+        resCard.innerHTML = `
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="badge bg-danger text-white rounded-pill px-2 py-1 mb-1 small">NOT VERIFIED</span>
+              <h6 class="fw-bold text-danger mb-0">${err.message}</h6>
+              <p class="small text-muted mb-0">Check if token ID was typed correctly or already redeemed.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="this.closest('#counter-result-card').classList.add('d-none')">Dismiss</button>
+          </div>
+        `;
+      }
+    }
+
+    function redeemTokenDirect(tokenId) {
+      try {
+        const token = DB.redeemMealToken(tokenId);
+        App.toast(`Token ${token.tokenId} marked as Redeemed!`, 'success');
+        renderKitchenCounts();
+        renderTokensTable();
+      } catch (e) {
+        App.toast(e.message, 'danger');
+      }
+    }
+  </script>
+</body>
+</html>

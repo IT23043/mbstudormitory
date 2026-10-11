@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seat Allocation &amp; Evaluation | MBSTU Dormitory</title>
+  <link rel="icon" type="image/png" href="MBSTU_logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Admin Navbar -->
+  <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="admin-dashboard.html">
+        <img src="MBSTU_logo.png" alt="MBSTU Logo" class="brand-logo">
+        <div>
+          <span class="fw-bold text-dark fs-5">MBSTU</span>
+          <span class="text-primary fw-bold fs-5">Dormitory</span>
+          <small class="d-block text-muted" style="font-size: 0.72rem;">Seat Allocation Manager</small>
+        </div>
+      </a>
+
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#seatNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="seatNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Overview</a></li>
+          <li class="nav-item"><a class="nav-link active" href="admin-seats.html">Seat Allocations</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-meals.html">Dining Counter</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-notices.html">Circulars</a></li>
+        </ul>
+
+        <div id="navbar-auth-container"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-4">
+    <div class="container">
+
+      <!-- Header Banner -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+          <span class="badge bg-light text-dark border mb-1">
+            Provost Committee Evaluation
+          </span>
+          <h2 class="fw-bold text-dark mb-0">Seat Application Review &amp; Allocation</h2>
+          <p class="text-muted small mb-0">Evaluate student merit, distance criteria, and allocate rooms and beds.</p>
+        </div>
+
+        <div>
+          <button onclick="DB.exportJSON()" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            Export Allocation List
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters Row -->
+      <div class="premium-card p-3 bg-white mb-4">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary mb-1">Filter by Residential Hall</label>
+            <select class="form-select form-select-sm" id="filter-hall" onchange="renderApplications()">
+              <option value="">All 7 Residential Halls</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary mb-1">Filter by Status</label>
+            <select class="form-select form-select-sm" id="filter-status" onchange="renderApplications()">
+              <option value="">All Statuses</option>
+              <option value="Pending" selected>Pending Review</option>
+              <option value="Approved">Approved</option>
+              <option value="Waitlisted">Waitlisted</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary mb-1">Search Student Name or ID</label>
+            <input type="text" class="form-control form-control-sm" id="search-query" placeholder="e.g. IT-21045 or Tanvir" oninput="renderApplications()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications Table -->
+      <div class="premium-card p-4 bg-white mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-dark mb-0">Student Seat Applications Roster</h5>
+          <span class="badge bg-light text-dark border" id="count-indicator">Showing 0 applications</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>App ID</th>
+                <th>Student</th>
+                <th>ID</th>
+                <th>Department &amp; Session</th>
+                <th>CGPA</th>
+                <th>Hall</th>
+                <th>District</th>
+                <th>Status</th>
+                <th>Room/Bed</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-apps-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Evaluate Application -->
+  <div class="modal fade" id="evalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border rounded-3">
+        <div class="modal-header border-bottom pb-3">
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0">Seat Application Evaluation</h5>
+            <small class="text-muted" id="eval-modal-id">Application ID: APP-0000</small>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <div class="p-3 bg-light rounded border mb-4">
+            <div class="row g-2">
+              <div class="col-sm-6">
+                <span class="text-muted small">Student Name:</span>
+                <div class="fw-bold text-dark" id="eval-name">-</div>
+              </div>
+              <div class="col-sm-6">
+                <span class="text-muted small">Student ID:</span>
+                <div class="fw-bold font-mono text-dark" id="eval-student-id">-</div>
+              </div>
+              <div class="col-sm-6">
+                <span class="text-muted small">Academic Dept &amp; Session:</span>
+                <div class="text-dark" id="eval-dept">-</div>
+              </div>
+              <div class="col-sm-6">
+                <span class="text-muted small">Merit CGPA:</span>
+                <div class="fw-bold text-dark" id="eval-cgpa">-</div>
+              </div>
+              <div class="col-sm-6">
+                <span class="text-muted small">Home District:</span>
+                <div class="text-dark" id="eval-distance">-</div>
+              </div>
+              <div class="col-sm-6">
+                <span class="text-muted small">Family Income:</span>
+                <div class="text-dark" id="eval-income">-</div>
+              </div>
+              <div class="col-12 mt-2">
+                <span class="text-muted small">Justification:</span>
+                <div class="p-2 bg-white rounded border small text-secondary mt-1" id="eval-reason">-</div>
+              </div>
+            </div>
+          </div>
+
+          <form id="evalForm" onsubmit="handleEvaluationSubmit(event)">
+            <input type="hidden" id="eval-target-app-id">
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Decision Action *</label>
+                <select class="form-select" id="eval-action" required onchange="onActionChange()">
+                  <option value="Approved">Approve &amp; Allocate Seat</option>
+                  <option value="Waitlisted">Place on Waiting List</option>
+                  <option value="Rejected">Reject Application</option>
+                </select>
+              </div>
+
+              <div class="col-md-3" id="field-room">
+                <label class="form-label small fw-semibold text-secondary">Assign Room *</label>
+                <input type="text" class="form-control" id="eval-room" placeholder="e.g. 304" required>
+              </div>
+
+              <div class="col-md-3" id="field-bed">
+                <label class="form-label small fw-semibold text-secondary">Assign Bed *</label>
+                <select class="form-select" id="eval-bed" required>
+                  <option value="A">Bed A</option>
+                  <option value="B" selected>Bed B</option>
+                  <option value="C">Bed C</option>
+                  <option value="D">Bed D</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label small fw-semibold text-secondary">Provost Remarks *</label>
+                <textarea class="form-control" id="eval-remarks" rows="2" required placeholder="Official decision note..."></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer border-top-0 px-0 pb-0 mt-4">
+              <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSubmitEval">
+                Save Decision
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    let currentAdmin = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await DB.init();
+      currentAdmin = Auth.requireAuthority();
+      if (!currentAdmin) return;
+
+      setupHallFilter();
+      renderApplications();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlAppId = urlParams.get('appId');
+      if (urlAppId) {
+        setTimeout(() => openEvaluationModal(urlAppId), 300);
+      }
+    });
+
+    function setupHallFilter() {
+      const select = document.getElementById('filter-hall');
+      const halls = DB.getHalls();
+      halls.forEach(h => {
+        const opt = document.createElement('option');
+        opt.value = h.id;
+        opt.textContent = `${h.name} (${h.gender})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderApplications() {
+      const hallFilter = document.getElementById('filter-hall').value;
+      const statusFilter = document.getElementById('filter-status').value;
+      const query = document.getElementById('search-query').value.trim().toLowerCase();
+
+      let apps = DB.getSeatApplications();
+
+      if (hallFilter) {
+        apps = apps.filter(a => a.hallId === hallFilter);
+      }
+      if (statusFilter) {
+        apps = apps.filter(a => a.status.toLowerCase() === statusFilter.toLowerCase());
+      }
+      if (query) {
+        apps = apps.filter(a => 
+          a.studentName.toLowerCase().includes(query) || 
+          a.studentId.toLowerCase().includes(query) ||
+          a.appId.toLowerCase().includes(query)
+        );
+      }
+
+      document.getElementById('count-indicator').innerText = `Showing ${apps.length} applications`;
+      const tbody = document.getElementById('admin-apps-table');
+      tbody.innerHTML = '';
+
+      if (apps.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">No applications matching the selected criteria.</td></tr>`;
+        return;
+      }
+
+      apps.forEach(a => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="font-mono fw-bold">${a.appId}</td>
+            <td class="fw-bold text-dark">${a.studentName}</td>
+            <td class="font-mono text-muted">${a.studentId}</td>
+            <td>${a.department} <span class="text-muted small">(${a.session})</span></td>
+            <td class="fw-bold text-dark">${a.cgpa}</td>
+            <td>${a.hallName}</td>
+            <td class="small text-muted">${a.homeDistrict}</td>
+            <td><span class="badge bg-light text-dark border">${a.status}</span></td>
+            <td>${a.allocatedRoom ? `<span class="badge bg-light text-dark border">Room ${a.allocatedRoom}-${a.allocatedSeat}</span>` : '-'}</td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-0" onclick="openEvaluationModal('${a.appId}')">
+                Review
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function openEvaluationModal(appId) {
+      const app = DB.getSeatApplicationById(appId);
+      if (!app) {
+        App.toast('Application not found', 'danger');
+        return;
+      }
+
+      document.getElementById('eval-target-app-id').value = app.appId;
+      document.getElementById('eval-modal-id').innerText = `Application ID: ${app.appId} • Applied: ${app.appliedDate}`;
+      document.getElementById('eval-name').innerText = app.studentName;
+      document.getElementById('eval-student-id').innerText = app.studentId;
+      document.getElementById('eval-dept').innerText = `${app.department} (${app.session})`;
+      document.getElementById('eval-cgpa').innerText = `${app.cgpa} / 4.00`;
+      document.getElementById('eval-distance').innerText = app.homeDistrict;
+      document.getElementById('eval-income').innerText = app.monthlyIncome || 'N/A';
+      document.getElementById('eval-reason').innerText = app.reason;
+
+      document.getElementById('eval-action').value = app.status === 'Pending' ? 'Approved' : app.status;
+      document.getElementById('eval-room').value = app.allocatedRoom || '304';
+      document.getElementById('eval-bed').value = app.allocatedSeat || 'B';
+      document.getElementById('eval-remarks').value = app.remarks || 'Seat allocated on merit.';
+
+      onActionChange();
+      const modal = new bootstrap.Modal(document.getElementById('evalModal'));
+      modal.show();
+    }
+
+    function onActionChange() {
+      const action = document.getElementById('eval-action').value;
+      const roomField = document.getElementById('field-room');
+      const bedField = document.getElementById('field-bed');
+      const roomInput = document.getElementById('eval-room');
+
+      if (action === 'Approved') {
+        roomField.classList.remove('d-none');
+        bedField.classList.remove('d-none');
+        roomInput.required = true;
+      } else {
+        roomField.classList.add('d-none');
+        bedField.classList.add('d-none');
+        roomInput.required = false;
+      }
+    }
+
+    function handleEvaluationSubmit(e) {
+      e.preventDefault();
+      const appId = document.getElementById('eval-target-app-id').value;
+      const status = document.getElementById('eval-action').value;
+      const room = document.getElementById('eval-room').value.trim();
+      const bed = document.getElementById('eval-bed').value;
+      const remarks = document.getElementById('eval-remarks').value.trim();
+
+      try {
+        DB.updateSeatApplicationStatus(appId, status, {
+          reviewedBy: currentAdmin.name,
+          allocatedRoom: status === 'Approved' ? room : null,
+          allocatedSeat: status === 'Approved' ? bed : null,
+          remarks: remarks
+        });
+
+        App.toast(`Application ${appId} marked as ${status}!`, 'success');
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('evalModal'));
+        modal.hide();
+
+        renderApplications();
+      } catch (err) {
+        App.toast(err.message, 'danger');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration | MBSTU Dormitory</title>
+  <link rel="icon" type="image/png" href="MBSTU_logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg custom-navbar">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+        <img src="MBSTU_logo.png" alt="MBSTU Logo" class="brand-logo">
+        <div>
+          <span class="fw-bold text-dark fs-5">MBSTU</span>
+          <span class="text-primary fw-bold fs-5">Dormitory</span>
+        </div>
+      </a>
+      <div class="ms-auto">
+        <a href="login.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+          Already Registered? Login
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Registration Container -->
+  <div class="py-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="premium-card p-4 p-md-5 bg-white border">
+            
+            <div class="text-center mb-4">
+              <span class="badge bg-light text-dark border mb-2 px-3 py-1">Student Account Setup</span>
+              <h3 class="fw-bold text-dark mb-1">Create Student Profile</h3>
+              <p class="text-muted small">
+                Register with your official <strong>@mbstu.acu.bd</strong> email to reserve meal tokens and apply for hall accommodation.
+              </p>
+            </div>
+
+            <div id="register-alert" class="alert alert-danger py-2 px-3 small rounded-2 d-none mb-3"></div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)">
+              <div class="row g-3">
+                
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary">Full Name *</label>
+                  <input type="text" class="form-control" id="reg-name" required placeholder="e.g. S. M. Tanvir Rahman">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary">Student ID *</label>
+                  <input type="text" class="form-control" id="reg-student-id" required placeholder="e.g. IT-21045 or CSE-21012">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary">MBSTU Institutional Email *</label>
+                  <input type="email" class="form-control" id="reg-email" required placeholder="yourid@mbstu.acu.bd">
+                  <div class="form-text small text-muted">Domain must contain <code>mbstu.acu.bd</code></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary">Password *</label>
+                  <input type="password" class="form-control" id="reg-password" required minlength="6" placeholder="At least 6 characters">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary">Department *</label>
+                  <select class="form-select" id="reg-department" required>
+                    <option value="">Select Department</option>
+                    <option value="Information & Communication Technology">Information & Communication Technology (ICT)</option>
+                    <option value="Computer Science & Engineering">Computer Science & Engineering (CSE)</option>
+                    <option value="Textile Engineering">Textile Engineering (TE)</option>
+                    <option value="Software Engineering">Software Engineering (SE)</option>
+                    <option value="Biotechnology & Genetic Engineering">Biotechnology & Genetic Engineering (BGE)</option>
+                    <option value="Environmental Science & Resource Management">Environmental Science & Resource Management (ESRM)</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                    <option value="Business Administration">Business Administration (BBA)</option>
+                    <option value="Economics">Economics</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary">Session *</label>
+                  <select class="form-select" id="reg-session" required>
+                    <option value="2023-24">2023-24</option>
+                    <option value="2022-23" selected>2022-23</option>
+                    <option value="2021-22">2021-22</option>
+                    <option value="2020-21">2020-21</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary">Gender * (Determines Hall Eligibility)</label>
+                  <div class="d-flex gap-4 mt-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="genderRadio" id="genderMale" value="Male" checked onchange="onGenderChange()">
+                      <label class="form-check-label" for="genderMale">Male</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="genderRadio" id="genderFemale" value="Female" onchange="onGenderChange()">
+                      <label class="form-check-label" for="genderFemale">Female</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary">Residential Status *</label>
+                  <select class="form-select" id="reg-resident-status" required>
+                    <option value="Permanent Resident">Permanent Resident (Currently Allocated Hall Seat)</option>
+                    <option value="Non-Resident">Non-Resident (Dining Attached / Living Off-Campus)</option>
+                  </select>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="p-3 bg-light rounded border">
+                    <label class="form-label small fw-bold text-dark d-flex justify-content-between align-items-center mb-1">
+                      <span>Residential Hall Selection *</span>
+                      <span class="badge bg-light text-dark border small" id="hall-filter-indicator">Filtered for: Male</span>
+                    </label>
+                    <select class="form-select" id="reg-hall-id" required>
+                      <!-- Dynamically filled by JS -->
+                    </select>
+                    <div class="form-text small text-muted mt-1">
+                      Male students can only register into Male Halls; Female students into Female Halls.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold text-secondary">Mobile Number</label>
+                  <input type="tel" class="form-control" id="reg-phone" placeholder="+880 17XXXXXXXX">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold text-secondary">Blood Group</label>
+                  <select class="form-select" id="reg-blood">
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+" selected>O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold text-secondary">Home District</label>
+                  <input type="text" class="form-control" id="reg-district" placeholder="e.g. Tangail, Bogura">
+                </div>
+
+              </div>
+
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary py-2 rounded-pill fw-semibold" id="btnRegister">
+                  Complete Registration &amp; Access Dashboard
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    function getSelectedGender() {
+      return document.querySelector('input[name="genderRadio"]:checked').value;
+    }
+
+    function onGenderChange() {
+      const gender = getSelectedGender();
+      document.getElementById('hall-filter-indicator').innerText = `Filtered for: ${gender}`;
+      App.populateHallDropdown('reg-hall-id', gender);
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById('register-alert');
+      const submitBtn = document.getElementById('btnRegister');
+
+      alertBox.classList.add('d-none');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Registering Profile...';
+
+      const payload = {
+        name: document.getElementById('reg-name').value.trim(),
+        studentId: document.getElementById('reg-student-id').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        password: document.getElementById('reg-password').value,
+        department: document.getElementById('reg-department').value,
+        session: document.getElementById('reg-session').value,
+        gender: getSelectedGender(),
+        residentStatus: document.getElementById('reg-resident-status').value,
+        hallId: document.getElementById('reg-hall-id').value,
+        phone: document.getElementById('reg-phone').value.trim(),
+        bloodGroup: document.getElementById('reg-blood').value,
+        homeDistrict: document.getElementById('reg-district').value.trim()
+      };
+
+      try {
+        const user = await Auth.registerStudent(payload);
+        App.toast('Registration successful! Welcome to MBSTU Dormitory.', 'success');
+        setTimeout(() => {
+          window.location.href = 'student-dashboard.html';
+        }, 600);
+      } catch (err) {
+        alertBox.innerText = err.message || 'Registration failed.';
+        alertBox.classList.remove('d-none');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Complete Registration &amp; Access Dashboard';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await DB.init();
+      onGenderChange();
+    });
+  </script>
+</body>
+</html>

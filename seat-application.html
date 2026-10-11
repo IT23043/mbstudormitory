@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seat Matrix &amp; Applications | MBSTU Dormitory</title>
+  <link rel="icon" type="image/png" href="MBSTU_logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="student-dashboard.html">
+        <img src="MBSTU_logo.png" alt="MBSTU Logo" class="brand-logo">
+        <div>
+          <span class="fw-bold text-dark fs-5">MBSTU</span>
+          <span class="text-primary fw-bold fs-5">Dormitory</span>
+          <small class="d-block text-muted" style="font-size: 0.72rem;">Seat Allocation Portal</small>
+        </div>
+      </a>
+
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#seatNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="seatNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="student-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="meal-tokens.html">3x Meal Tokens</a></li>
+          <li class="nav-item"><a class="nav-link active" href="seat-application.html">Seat Matrix</a></li>
+          <li class="nav-item"><a class="nav-link" href="notice-board.html">Notices</a></li>
+        </ul>
+
+        <div id="navbar-auth-container"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-4">
+    <div class="container">
+
+      <!-- Header Banner -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+          <span class="badge bg-light text-dark border mb-1">
+            Room &amp; Bed Availability
+          </span>
+          <h2 class="fw-bold text-dark mb-0">Seat Matrix Explorer &amp; Online Application</h2>
+          <p class="text-muted small mb-0">Inspect vacant beds across halls and submit accommodation applications.</p>
+        </div>
+
+        <div>
+          <button class="btn btn-primary rounded-pill px-4" onclick="openApplyModal()">
+            Apply for Hall Seat
+          </button>
+        </div>
+      </div>
+
+      <!-- Eligibility & "When Can I Apply?" Callout Banner (Clean Navy/Slate) -->
+      <div class="card border-0 bg-white border rounded-3 p-4 mb-4">
+        <div class="row align-items-center gy-3">
+          <div class="col-lg-8">
+            <span class="badge bg-light text-dark border mb-2">
+              Spring 2026 Allocation Round: OPEN
+            </span>
+            <h4 class="fw-bold text-dark mb-1">When Can I Apply &amp; Eligibility Guidelines</h4>
+            <p class="small text-secondary mb-3">
+              Applications are open until <strong>October 25, 2026</strong>. Regular undergraduate students with no disciplinary violations and minimum CGPA of 2.75 are eligible. Priority is based on merit and home district commute distance.
+            </p>
+            <div class="d-flex flex-wrap gap-2 small">
+              <span class="badge bg-light text-dark border px-3 py-2">MBSTU Regular Student</span>
+              <span class="badge bg-light text-dark border px-3 py-2">Distance Priority (>50 km)</span>
+              <span class="badge bg-light text-dark border px-3 py-2">Merit Evaluation (CGPA)</span>
+            </div>
+          </div>
+          <div class="col-lg-4 text-lg-end">
+            <div class="p-3 bg-light rounded border text-start d-inline-block">
+              <small class="text-muted d-block">Application Timeline</small>
+              <div class="fw-bold text-dark fs-6 mb-1">Oct 05 - Oct 25, 2026</div>
+              <small class="text-muted d-block">Merit Result Publication</small>
+              <div class="fw-bold text-dark fs-6">November 02, 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hall Selector & Overall Seat Stats -->
+      <div class="premium-card p-4 bg-white mb-4">
+        <div class="row align-items-center gy-3">
+          <div class="col-md-5">
+            <label class="form-label small fw-bold text-secondary">Select Residential Hall</label>
+            <select class="form-select form-select-sm" id="hall-selector" onchange="onHallSelectionChange()">
+              <!-- Filled via JS -->
+            </select>
+          </div>
+          <div class="col-md-7">
+            <div class="row g-2 text-center">
+              <div class="col-4">
+                <div class="p-2 bg-light rounded border">
+                  <small class="text-muted d-block" style="font-size: 0.72rem;">Total Capacity</small>
+                  <strong class="fs-5 text-dark" id="stat-hall-capacity">-</strong>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="p-2 bg-light rounded border">
+                  <small class="text-muted d-block" style="font-size: 0.72rem;">Occupied</small>
+                  <strong class="fs-5 text-dark" id="stat-hall-occupied">-</strong>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="p-2 bg-light rounded border">
+                  <small class="text-muted d-block" style="font-size: 0.72rem;">Available Beds</small>
+                  <strong class="fs-5 text-success" id="stat-hall-available">-</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Floor & Room Seat Matrix Visualizer -->
+      <div class="premium-card p-4 bg-white mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+          <div>
+            <h5 class="fw-bold text-dark mb-0">Floor Layout &amp; Room Matrix</h5>
+            <small class="text-muted">Click any vacant green bed to select it for your application.</small>
+          </div>
+
+          <!-- Floor Selector Tabs -->
+          <ul class="nav nav-pills bg-light p-1 rounded-pill small border" id="floorTabs">
+            <li class="nav-item"><button class="nav-link active rounded-pill px-3 py-1" onclick="switchFloor(1)">1st Floor</button></li>
+            <li class="nav-item"><button class="nav-link rounded-pill px-3 py-1" onclick="switchFloor(2)">2nd Floor</button></li>
+            <li class="nav-item"><button class="nav-link rounded-pill px-3 py-1" onclick="switchFloor(3)">3rd Floor</button></li>
+            <li class="nav-item"><button class="nav-link rounded-pill px-3 py-1" onclick="switchFloor(4)">4th Floor</button></li>
+          </ul>
+        </div>
+
+        <!-- Legend (Clean) -->
+        <div class="d-flex align-items-center gap-3 small mb-4 p-2 bg-light rounded border">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-success px-2 py-1">&nbsp;</span>
+            <span class="text-dark fw-medium">Available Bed (Vacant)</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-secondary px-2 py-1">&nbsp;</span>
+            <span class="text-muted">Occupied</span>
+          </div>
+        </div>
+
+        <div class="seat-matrix-grid" id="matrix-container"></div>
+      </div>
+
+      <!-- My Past Applications Section -->
+      <div class="premium-card p-4 bg-white mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-dark mb-0">My Applications History</h5>
+          <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="openApplyModal()">
+            New Application
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Tracking ID</th>
+                <th>Hall Requested</th>
+                <th>Date</th>
+                <th>CGPA</th>
+                <th>District</th>
+                <th>Status</th>
+                <th>Allocated Room/Bed</th>
+                <th>Provost Feedback</th>
+              </tr>
+            </thead>
+            <tbody id="my-apps-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Apply for Hall Seat -->
+  <div class="modal fade" id="applyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border rounded-3">
+        <div class="modal-header border-bottom pb-3">
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0">Submit Hall Accommodation Application</h5>
+            <small class="text-muted">Mawlana Bhashani Science and Technology University</small>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          
+          <div id="apply-error" class="alert alert-danger py-2 px-3 small rounded-2 d-none mb-3"></div>
+
+          <form id="applyForm" onsubmit="submitSeatApplication(event)">
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Applicant Name</label>
+                <input type="text" class="form-control" id="app-name" readonly>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Student ID</label>
+                <input type="text" class="form-control" id="app-id" readonly>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Department</label>
+                <input type="text" class="form-control" id="app-dept" readonly>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Select Residential Hall *</label>
+                <select class="form-select" id="app-hall" required>
+                  <!-- Populated filtered by gender -->
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold text-secondary">CGPA *</label>
+                <input type="number" step="0.01" min="2.00" max="4.00" class="form-control" id="app-cgpa" required placeholder="e.g. 3.75">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold text-secondary">Current Semester *</label>
+                <select class="form-select" id="app-semester" required>
+                  <option value="1st Semester">1st Semester</option>
+                  <option value="2nd Semester">2nd Semester</option>
+                  <option value="3rd Semester">3rd Semester</option>
+                  <option value="4th Semester">4th Semester</option>
+                  <option value="5th Semester" selected>5th Semester</option>
+                  <option value="6th Semester">6th Semester</option>
+                  <option value="7th Semester">7th Semester</option>
+                  <option value="8th Semester">8th Semester</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold text-secondary">Monthly Family Income</label>
+                <input type="text" class="form-control" id="app-income" placeholder="e.g. 20,000 BDT">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Home District &amp; Distance (km) *</label>
+                <input type="text" class="form-control" id="app-distance" required placeholder="e.g. Dinajpur (380 km)">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Preferred Room / Bed (Optional)</label>
+                <input type="text" class="form-control" id="app-pref-room" placeholder="e.g. Room 304, Bed B">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label small fw-semibold text-secondary">Statement of Need *</label>
+                <textarea class="form-control" id="app-reason" rows="3" required placeholder="State your reasons (commute hardship, academic lab commitments)..."></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer border-top-0 px-0 pb-0 mt-4">
+              <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSubmitApp">
+                Submit Official Application
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    let currentUser = null;
+    let selectedHall = null;
+    let currentFloor = 1;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await DB.init();
+      currentUser = Auth.getUser();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlHall = urlParams.get('hall');
+
+      setupHallSelector(urlHall);
+      renderMatrix();
+      renderMyApplications();
+    });
+
+    function setupHallSelector(initialHallId) {
+      const select = document.getElementById('hall-selector');
+      const halls = DB.getHalls();
+      select.innerHTML = '';
+
+      const studentGender = currentUser?.role === 'student' ? currentUser.gender : null;
+      App.populateHallDropdown('hall-selector', studentGender, initialHallId || currentUser?.hallId || halls[0].id);
+
+      const targetId = initialHallId || currentUser?.hallId || halls[0].id;
+      select.value = targetId;
+      selectedHall = DB.getHallById(targetId) || halls[0];
+      updateHallStats();
+    }
+
+    function onHallSelectionChange() {
+      const id = document.getElementById('hall-selector').value;
+      selectedHall = DB.getHallById(id);
+      updateHallStats();
+      renderMatrix();
+    }
+
+    function updateHallStats() {
+      if (!selectedHall) return;
+      document.getElementById('stat-hall-capacity').innerText = `${selectedHall.capacity} Seats`;
+      document.getElementById('stat-hall-occupied').innerText = `${selectedHall.occupied} Occupied`;
+      document.getElementById('stat-hall-available').innerText = `${selectedHall.available} Available`;
+    }
+
+    function switchFloor(floorNum) {
+      currentFloor = floorNum;
+      document.querySelectorAll('#floorTabs .nav-link').forEach((btn, idx) => {
+        if (idx + 1 === floorNum) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+      renderMatrix();
+    }
+
+    function renderMatrix() {
+      const container = document.getElementById('matrix-container');
+      container.innerHTML = '';
+
+      if (!selectedHall) return;
+
+      const baseRoom = currentFloor * 100;
+      for (let r = 1; r <= 8; r++) {
+        const roomNo = baseRoom + r;
+        
+        const beds = ['A', 'B', 'C', 'D'].map((bedLetter, idx) => {
+          const hash = (selectedHall.name.length * 7 + roomNo * 13 + idx * 19) % 10;
+          const isAvailable = hash > 7;
+          return {
+            letter: bedLetter,
+            available: isAvailable
+          };
+        });
+
+        const availableCount = beds.filter(b => b.available).length;
+
+        const roomCard = `
+          <div class="room-card">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="fw-bold text-dark">Room ${roomNo}</span>
+              <span class="badge bg-light text-dark border small">
+                ${availableCount > 0 ? `${availableCount} Vacant` : 'Full'}
+              </span>
+            </div>
+            <div class="beds-layout">
+              ${beds.map(b => `
+                <div class="bed-box ${b.available ? 'bed-available' : 'bed-occupied'}" 
+                     onclick="${b.available ? `selectBedForApplication(${roomNo}, '${b.letter}')` : ''}"
+                     title="${b.available ? `Choose Room ${roomNo} Bed ${b.letter}` : 'Occupied'}">
+                  Bed ${b.letter}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', roomCard);
+      }
+    }
+
+    function selectBedForApplication(room, bed) {
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+      openApplyModal();
+      document.getElementById('app-pref-room').value = `Room ${room}, Bed ${bed}`;
+      App.toast(`Selected Room ${room}, Bed ${bed} for application.`, 'info');
+    }
+
+    function openApplyModal() {
+      if (!currentUser) {
+        App.toast('Please log in with student credentials to apply.', 'warning');
+        setTimeout(() => window.location.href = 'login.html', 800);
+        return;
+      }
+
+      document.getElementById('app-name').value = currentUser.name;
+      document.getElementById('app-id').value = currentUser.studentId;
+      document.getElementById('app-dept').value = currentUser.department;
+
+      App.populateHallDropdown('app-hall', currentUser.gender, selectedHall?.id || currentUser.hallId);
+
+      const modal = new bootstrap.Modal(document.getElementById('applyModal'));
+      modal.show();
+    }
+
+    function renderMyApplications() {
+      const tbody = document.getElementById('my-apps-table');
+      tbody.innerHTML = '';
+
+      if (!currentUser) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Please log in to view applications.</td></tr>`;
+        return;
+      }
+
+      const apps = DB.getSeatApplications({ userId: currentUser.id });
+      if (apps.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">No applications submitted yet.</td></tr>`;
+        return;
+      }
+
+      apps.forEach(a => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="font-mono fw-bold">${a.appId}</td>
+            <td class="fw-semibold text-dark">${a.hallName}</td>
+            <td>${a.appliedDate}</td>
+            <td class="fw-bold text-dark">${a.cgpa}</td>
+            <td class="small text-muted">${a.homeDistrict}</td>
+            <td><span class="badge bg-light text-dark border">${a.status}</span></td>
+            <td>${a.allocatedRoom ? `<span class="badge bg-light text-dark border">Room ${a.allocatedRoom} (${a.allocatedSeat})</span>` : '-'}</td>
+            <td class="small text-secondary">${a.remarks}</td>
+          </tr>
+        `;
+      });
+    }
+
+    async function submitSeatApplication(e) {
+      e.preventDefault();
+      const hallId = document.getElementById('app-hall').value;
+      const hall = DB.getHallById(hallId);
+      const cgpa = document.getElementById('app-cgpa').value;
+      const semester = document.getElementById('app-semester').value;
+      const distance = document.getElementById('app-distance').value.trim();
+      const income = document.getElementById('app-income').value.trim() || 'N/A';
+      const reason = document.getElementById('app-reason').value.trim();
+      const prefRoom = document.getElementById('app-pref-room').value.trim();
+
+      const btn = document.getElementById('btnSubmitApp');
+      const errBox = document.getElementById('apply-error');
+      errBox.classList.add('d-none');
+      btn.disabled = true;
+
+      try {
+        const app = DB.createSeatApplication({
+          userId: currentUser.id,
+          studentName: currentUser.name,
+          studentId: currentUser.studentId,
+          gender: currentUser.gender,
+          department: currentUser.department,
+          session: currentUser.session,
+          semester: semester,
+          cgpa: cgpa,
+          hallId: hall.id,
+          hallName: hall.name,
+          homeDistrict: distance,
+          monthlyIncome: income,
+          reason: `${reason} ${prefRoom ? `(Preferred: ${prefRoom})` : ''}`
+        });
+
+        App.toast(`Seat Application (${app.appId}) submitted!`, 'success');
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('applyModal'));
+        modal.hide();
+        document.getElementById('applyForm').reset();
+
+        renderMyApplications();
+      } catch (err) {
+        errBox.innerText = err.message || 'Submission error';
+        errBox.classList.remove('d-none');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

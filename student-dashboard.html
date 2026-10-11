@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard | MBSTU Dormitory</title>
+  <link rel="icon" type="image/png" href="MBSTU_logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="student-dashboard.html">
+        <img src="MBSTU_logo.png" alt="MBSTU Logo" class="brand-logo">
+        <div>
+          <span class="fw-bold text-dark fs-5">MBSTU</span>
+          <span class="text-primary fw-bold fs-5">Dormitory</span>
+          <small class="d-block text-muted" style="font-size: 0.72rem;">Student Portal</small>
+        </div>
+      </a>
+
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#stuNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="stuNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" href="student-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="meal-tokens.html">Daily Meal Tokens</a></li>
+          <li class="nav-item"><a class="nav-link" href="seat-application.html">Seat Matrix &amp; Apply</a></li>
+          <li class="nav-item"><a class="nav-link" href="notice-board.html">Notices</a></li>
+        </ul>
+
+        <div id="navbar-auth-container"></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Dashboard Content -->
+  <main class="py-4">
+    <div class="container">
+      
+      <!-- Student Profile Header Card -->
+      <div class="premium-card p-4 bg-white mb-4 border">
+        <div class="row align-items-center gy-3">
+          <div class="col">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+              <h3 class="fw-bold text-dark mb-0" id="user-name">Loading...</h3>
+              <span class="badge bg-light text-dark border" id="badge-resident-status">Resident</span>
+              <span class="badge bg-light text-muted border" id="badge-gender">Male</span>
+            </div>
+            <p class="text-secondary small mb-2">
+              <span id="user-student-id" class="fw-bold font-mono me-2">IT-00000</span> | 
+              <span id="user-dept" class="me-2">Department</span> | 
+              <span id="user-hall" class="fw-semibold text-primary">Hall Name</span>
+            </p>
+            <div class="d-flex flex-wrap gap-3 small text-muted">
+              <span>Room: <strong id="user-room" class="text-dark">304</strong></span>
+              <span>Seat Bed: <strong id="user-seat" class="text-dark">B</strong></span>
+              <span>Email: <span id="user-email">email@mbstu.acu.bd</span></span>
+            </div>
+          </div>
+          <div class="col-lg-auto text-lg-end pt-2 pt-lg-0">
+            <!-- Wallet Balance Card (Clean 2-color styling) -->
+            <div class="p-3 bg-light rounded border d-inline-block text-start" style="min-width: 190px;">
+              <small class="text-muted d-block fw-semibold mb-1">Campus Wallet</small>
+              <h4 class="fw-bold text-dark mb-2" id="user-wallet">0 ৳</h4>
+              <button class="btn btn-primary btn-sm rounded-pill px-3 w-100" data-bs-toggle="modal" data-bs-target="#rechargeModal">
+                Top-up Balance
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons Row (Clean) -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+          <a href="meal-tokens.html" class="premium-card p-3 bg-white text-decoration-none d-block h-100">
+            <div class="fw-bold text-dark">Book Meal</div>
+            <small class="text-muted">3x Daily Tokens</small>
+          </a>
+        </div>
+        <div class="col-md-3 col-6">
+          <a href="seat-application.html" class="premium-card p-3 bg-white text-decoration-none d-block h-100">
+            <div class="fw-bold text-dark">Seat Matrix</div>
+            <small class="text-muted">Apply &amp; Check</small>
+          </a>
+        </div>
+        <div class="col-md-3 col-6">
+          <a href="#complaints-section" class="premium-card p-3 bg-white text-decoration-none d-block h-100" data-bs-toggle="modal" data-bs-target="#complaintModal">
+            <div class="fw-bold text-dark">Report Issue</div>
+            <small class="text-muted">Hall Maintenance</small>
+          </a>
+        </div>
+        <div class="col-md-3 col-6">
+          <a href="notice-board.html" class="premium-card p-3 bg-white text-decoration-none d-block h-100">
+            <div class="fw-bold text-dark">Notice Board</div>
+            <small class="text-muted">Hall Circulars</small>
+          </a>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Grid -->
+      <div class="row g-4">
+        
+        <!-- Left Column: Today's 3x Meal Tokens & Seat Status -->
+        <div class="col-lg-8">
+          
+          <!-- Today's Meal Status Card -->
+          <div class="premium-card p-4 bg-white mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="badge bg-light text-dark border mb-1">Today's Passes</span>
+                <h5 class="fw-bold text-dark mb-0">Daily 3x Meal Tokens</h5>
+              </div>
+              <a href="meal-tokens.html" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                Manage / Book
+              </a>
+            </div>
+
+            <div class="row g-3" id="today-meals-grid"></div>
+          </div>
+
+          <!-- Seat Application Status Card -->
+          <div class="premium-card p-4 bg-white mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold text-dark mb-0">Seat Accommodation Status</h5>
+              <a href="seat-application.html" class="small fw-semibold text-primary text-decoration-none">
+                Details &amp; Matrix
+              </a>
+            </div>
+
+            <div id="seat-status-container"></div>
+          </div>
+
+          <!-- Student's Support Complaints -->
+          <div class="premium-card p-4 bg-white" id="complaints-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold text-dark mb-0">Hall Maintenance &amp; Service Issues</h5>
+              <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#complaintModal">
+                Report Issue
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Tracking ID</th>
+                    <th>Category</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Response</th>
+                  </tr>
+                </thead>
+                <tbody id="student-complaints-table"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Hall Info & Notices -->
+        <div class="col-lg-4">
+          
+          <div class="premium-card p-4 bg-white mb-4">
+            <h6 class="fw-bold text-dark mb-1" id="info-hall-name">Hall Overview</h6>
+            <p class="text-muted small mb-3" id="info-hall-provost">Provost Office</p>
+
+            <div class="list-group list-group-flush small">
+              <div class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted">Total Capacity:</span>
+                <span class="fw-bold text-dark" id="info-hall-capacity">-</span>
+              </div>
+              <div class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted">Available Beds:</span>
+                <span class="fw-bold text-dark" id="info-hall-available">-</span>
+              </div>
+              <div class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted">Provost Email:</span>
+                <span class="text-dark font-mono" id="info-hall-contact">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Circulars Widget -->
+          <div class="premium-card p-4 bg-white">
+            <h6 class="fw-bold text-dark mb-3">Hall Bulletins</h6>
+            <div class="d-flex flex-column gap-3" id="sidebar-notices"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Top-up Wallet -->
+  <div class="modal fade" id="rechargeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border shadow-sm rounded-3">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold">Top-up Campus Wallet</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small">Select amount to simulate wallet top-up for meal tokens.</p>
+          
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Amount</label>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-outline-secondary btn-sm flex-fill rounded-pill" onclick="setTopup(150)">150 ৳</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm flex-fill rounded-pill" onclick="setTopup(300)">300 ৳</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm flex-fill rounded-pill" onclick="setTopup(500)">500 ৳</button>
+            </div>
+            <input type="number" id="topup-amount" class="form-control mt-2" placeholder="Amount in BDT" value="300" min="50">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Payment Option</label>
+            <select class="form-select" id="topup-method">
+              <option value="bKash">bKash</option>
+              <option value="Nagad">Nagad</option>
+              <option value="Rocket">Rocket</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary rounded-pill px-4" onclick="confirmRecharge()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Report Issue -->
+  <div class="modal fade" id="complaintModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border shadow-sm rounded-3">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold">Report Facility Issue</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="complaintForm" onsubmit="submitComplaint(event)">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Issue Category *</label>
+              <select class="form-select" id="cmp-category" required>
+                <option value="Wi-Fi & Internet">Wi-Fi &amp; Internet</option>
+                <option value="Electricity & Fan">Electricity / Light / Fan</option>
+                <option value="Plumbing & Water">Washroom / Water</option>
+                <option value="Dining & Mess">Mess / Dining</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Room Number *</label>
+              <input type="text" class="form-control" id="cmp-room" required placeholder="e.g. 304">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Description *</label>
+              <textarea class="form-control" id="cmp-subject" rows="3" required placeholder="Describe the issue..."></textarea>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary rounded-pill py-2">Submit Ticket</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    let currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await DB.init();
+      currentUser = Auth.requireStudent();
+      if (!currentUser) return;
+
+      renderUserProfile();
+      renderTodayMeals();
+      renderSeatStatus();
+      renderComplaints();
+      renderHallInfo();
+      renderNotices();
+    });
+
+    function renderUserProfile() {
+      document.getElementById('user-name').innerText = currentUser.name;
+      document.getElementById('user-student-id').innerText = currentUser.studentId;
+      document.getElementById('user-dept').innerText = currentUser.department;
+      document.getElementById('user-hall').innerText = currentUser.hallName;
+      document.getElementById('user-room').innerText = currentUser.roomNo || 'Unallocated';
+      document.getElementById('user-seat').innerText = currentUser.seatNo || 'N/A';
+      document.getElementById('user-email').innerText = currentUser.email;
+      document.getElementById('user-wallet').innerText = `${currentUser.walletBalance || 0} ৳`;
+
+      const isPermanent = currentUser.residentStatus === 'Permanent Resident';
+      const residentBadge = document.getElementById('badge-resident-status');
+      residentBadge.innerText = currentUser.residentStatus;
+      residentBadge.className = isPermanent ? 'badge bg-light text-dark border' : 'badge bg-light text-secondary border';
+
+      const genderBadge = document.getElementById('badge-gender');
+      genderBadge.innerText = currentUser.gender;
+    }
+
+    function renderTodayMeals() {
+      const today = new Date().toISOString().slice(0, 10);
+      const userTokens = DB.getMealTokens({ userId: currentUser.id, date: today });
+      const grid = document.getElementById('today-meals-grid');
+      grid.innerHTML = '';
+
+      const slots = [
+        { key: 'Morning', label: 'Breakfast', time: '07:30 - 09:30 AM' },
+        { key: 'Noon', label: 'Lunch', time: '01:00 - 03:00 PM' },
+        { key: 'Night', label: 'Dinner', time: '08:00 - 10:00 PM' }
+      ];
+
+      slots.forEach(slot => {
+        const token = userTokens.find(t => t.mealSlot === slot.key && t.status !== 'Cancelled');
+        let cardContent = '';
+
+        if (token) {
+          const isRedeemed = token.status === 'Redeemed';
+          cardContent = `
+            <div class="col-md-4">
+              <div class="p-3 rounded border bg-light h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="fw-bold mb-0 text-dark">${slot.key}</h6>
+                  <span class="badge ${isRedeemed ? 'bg-secondary' : 'bg-dark'} rounded-pill">${token.status}</span>
+                </div>
+                <div class="font-mono small text-primary fw-semibold mb-1">${token.tokenId}</div>
+                <div class="d-flex justify-content-between align-items-center small text-muted mb-3">
+                  <span>Price: <strong>${token.price} ৳</strong></span>
+                  <span>${slot.time}</span>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-secondary btn-sm flex-fill rounded-pill" onclick="App.printMealToken('${token.tokenId}')">
+                    Print Pass
+                  </button>
+                  ${!isRedeemed ? `
+                    <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="cancelTokenPrompt('${token.tokenId}')" title="Cancel Token">
+                      Cancel
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          cardContent = `
+            <div class="col-md-4">
+              <div class="p-3 rounded border bg-white h-100 text-center d-flex flex-column justify-content-center">
+                <h6 class="fw-bold mb-1 text-dark">${slot.key} (${slot.label})</h6>
+                <p class="small text-muted mb-3">No active token for today.</p>
+                <a href="meal-tokens.html?slot=${slot.key}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto">
+                  Book ${slot.key}
+                </a>
+              </div>
+            </div>
+          `;
+        }
+        grid.insertAdjacentHTML('beforeend', cardContent);
+      });
+    }
+
+    function renderSeatStatus() {
+      const container = document.getElementById('seat-status-container');
+      const apps = DB.getSeatApplications({ userId: currentUser.id });
+      const latestApp = apps[0];
+
+      if (currentUser.residentStatus === 'Permanent Resident' && currentUser.roomNo && currentUser.roomNo !== 'Pending Allocation') {
+        container.innerHTML = `
+          <div class="p-3 bg-light rounded border d-flex align-items-center justify-content-between">
+            <div>
+              <h6 class="fw-bold mb-0 text-dark">Active Resident Allocation</h6>
+              <small class="text-muted">Room: <strong>${currentUser.roomNo}</strong>, Bed: <strong>${currentUser.seatNo}</strong> at <strong>${currentUser.hallName}</strong></small>
+            </div>
+            <a href="seat-application.html" class="btn btn-outline-secondary btn-sm rounded-pill">View Room Matrix</a>
+          </div>
+        `;
+      } else if (latestApp) {
+        container.innerHTML = `
+          <div class="p-3 bg-light rounded border">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <span class="badge bg-light text-dark border rounded-pill mb-1">${latestApp.status}</span>
+                <h6 class="fw-bold mb-0 text-dark">Seat Application (${latestApp.appId})</h6>
+              </div>
+              <small class="text-muted">Applied: ${latestApp.appliedDate}</small>
+            </div>
+            <p class="small text-secondary mb-2">${latestApp.remarks}</p>
+            <div class="d-flex justify-content-between align-items-center small text-muted border-top pt-2">
+              <span>Applied Hall: <strong>${latestApp.hallName}</strong></span>
+              <a href="seat-application.html" class="text-primary fw-semibold">View Application</a>
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="p-4 bg-light rounded text-center border">
+            <h6 class="fw-bold text-dark mb-1">Non-Resident Status</h6>
+            <p class="small text-muted mb-3">Permanent seat accommodation is available for MBSTU regular students based on merit and distance.</p>
+            <a href="seat-application.html" class="btn btn-primary btn-sm rounded-pill px-4">
+              Apply for Hall Seat
+            </a>
+          </div>
+        `;
+      }
+    }
+
+    function renderComplaints() {
+      const tbody = document.getElementById('student-complaints-table');
+      const list = DB.getComplaints({ userId: currentUser.id });
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">No maintenance tickets submitted yet.</td></tr>`;
+        return;
+      }
+
+      list.forEach(c => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="font-mono fw-bold">${c.id}</td>
+            <td>${c.category}</td>
+            <td class="text-truncate" style="max-width: 180px;">${c.subject}</td>
+            <td>${c.date}</td>
+            <td><span class="badge bg-light text-dark border">${c.status}</span></td>
+            <td class="text-muted small">${c.response}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderHallInfo() {
+      const hall = DB.getHallById(currentUser.hallId);
+      if (!hall) return;
+      document.getElementById('info-hall-name').innerText = hall.name;
+      document.getElementById('info-hall-provost').innerText = `Provost: ${hall.provost}`;
+      document.getElementById('info-hall-capacity').innerText = `${hall.capacity} Beds`;
+      document.getElementById('info-hall-available').innerText = `${hall.available} Vacant`;
+      document.getElementById('info-hall-contact').innerText = hall.contact;
+    }
+
+    function renderNotices() {
+      const notices = DB.getNotices({ hallId: currentUser.hallId }).slice(0, 3);
+      const container = document.getElementById('sidebar-notices');
+      container.innerHTML = '';
+      notices.forEach(n => {
+        container.innerHTML += `
+          <div class="p-2 border-bottom">
+            <span class="badge bg-light text-dark border small mb-1">${n.category}</span>
+            <div class="fw-semibold text-dark small">${n.title}</div>
+            <small class="text-muted">${n.publishDate}</small>
+          </div>
+        `;
+      });
+    }
+
+    function setTopup(val) {
+      document.getElementById('topup-amount').value = val;
+    }
+
+    function confirmRecharge() {
+      const amount = Number(document.getElementById('topup-amount').value);
+      const method = document.getElementById('topup-method').value;
+
+      if (!amount || amount < 50) {
+        App.toast('Minimum recharge amount is 50 ৳', 'warning');
+        return;
+      }
+
+      currentUser.walletBalance = (currentUser.walletBalance || 0) + amount;
+      DB.updateUser(currentUser.id, { walletBalance: currentUser.walletBalance });
+
+      const modalEl = document.getElementById('rechargeModal');
+      bootstrap.Modal.getInstance(modalEl).hide();
+
+      renderUserProfile();
+      App.toast(`Recharged ${amount} ৳ successfully via ${method}!`, 'success');
+    }
+
+    function cancelTokenPrompt(tokenId) {
+      if (confirm('Cancel this meal token? The amount will be refunded to your Campus Wallet.')) {
+        try {
+          DB.cancelMealToken(tokenId, true);
+          renderUserProfile();
+          renderTodayMeals();
+          App.toast('Token cancelled and refunded to wallet.', 'success');
+        } catch (e) {
+          App.toast(e.message, 'danger');
+        }
+      }
+    }
+
+    function submitComplaint(e) {
+      e.preventDefault();
+      const cat = document.getElementById('cmp-category').value;
+      const room = document.getElementById('cmp-room').value.trim();
+      const subj = document.getElementById('cmp-subject').value.trim();
+
+      DB.createComplaint({
+        userId: currentUser.id,
+        studentName: currentUser.name,
+        studentId: currentUser.studentId,
+        hallId: currentUser.hallId,
+        hallName: currentUser.hallName,
+        category: cat,
+        roomNo: room,
+        subject: subj
+      });
+
+      const modalEl = document.getElementById('complaintModal');
+      bootstrap.Modal.getInstance(modalEl).hide();
+      document.getElementById('complaintForm').reset();
+
+      renderComplaints();
+      App.toast('Maintenance issue submitted to Provost office.', 'success');
+    }
+  </script>
+</body>
+</html>

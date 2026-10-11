@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily 3x Meal Tokens | MBSTU Dormitory</title>
+  <link rel="icon" type="image/png" href="MBSTU_logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="student-dashboard.html">
+        <img src="MBSTU_logo.png" alt="MBSTU Logo" class="brand-logo">
+        <div>
+          <span class="fw-bold text-dark fs-5">MBSTU</span>
+          <span class="text-primary fw-bold fs-5">Dormitory</span>
+          <small class="d-block text-muted" style="font-size: 0.72rem;">Dining &amp; Mess Tokens</small>
+        </div>
+      </a>
+
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mealNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mealNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="student-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link active" href="meal-tokens.html">3x Meal Tokens</a></li>
+          <li class="nav-item"><a class="nav-link" href="seat-application.html">Seat Matrix</a></li>
+          <li class="nav-item"><a class="nav-link" href="notice-board.html">Notices</a></li>
+        </ul>
+
+        <div id="navbar-auth-container"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-4">
+    <div class="container">
+      
+      <!-- Page Header Banner -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+          <span class="badge bg-light text-dark border mb-1">
+            Everyday Dining Token System
+          </span>
+          <h2 class="fw-bold text-dark mb-0">Online 3x Meal Token Booking</h2>
+          <p class="text-muted small mb-0">Book morning breakfast, noon lunch, and night dinner tokens online with zero paperwork.</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <!-- Student Wallet Widget -->
+          <div class="bg-white px-3 py-2 rounded border d-flex align-items-center gap-2">
+            <div>
+              <small class="text-muted d-block" style="font-size:0.75rem;">Wallet Balance</small>
+              <strong class="text-dark" id="display-wallet-bal">0 ৳</strong>
+            </div>
+            <a href="student-dashboard.html" class="btn btn-outline-secondary btn-sm rounded-circle ms-1" title="Top-up in Dashboard">
+              +
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        
+        <!-- Booking Form Column (Left) -->
+        <div class="col-lg-5">
+          <div class="premium-card p-4 bg-white border">
+            <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">New Meal Reservation</h5>
+
+            <form id="tokenBookingForm" onsubmit="handleBookToken(event)">
+              
+              <!-- Hall Selection (Gender Restricted) -->
+              <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Dining Hall *</label>
+                <select class="form-select" id="book-hall" required onchange="calculatePrice()">
+                  <!-- Dynamically populated based on student's gender -->
+                </select>
+                <div class="form-text small text-muted">
+                  Filtered exclusively for your eligible gender halls.
+                </div>
+              </div>
+
+              <!-- Target Booking Date -->
+              <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Token Date *</label>
+                <div class="input-group">
+                  <input type="date" class="form-control" id="book-date" required onchange="calculatePrice()">
+                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setQuickDate(0)">Today</button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setQuickDate(1)">Tomorrow</button>
+                </div>
+              </div>
+
+              <!-- Resident Type Display -->
+              <div class="p-3 bg-light rounded border mb-3">
+                <div class="d-flex justify-content-between align-items-center small">
+                  <span class="text-muted">Your Resident Category:</span>
+                  <strong id="display-resident-status" class="text-dark">Permanent Resident</strong>
+                </div>
+                <div class="small text-muted mt-1" id="pricing-tier-note">
+                  Subsidized resident pricing applied.
+                </div>
+              </div>
+
+              <!-- Meal Slot Selection (Morning, Noon, Night) -->
+              <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Choose Meal Slot *</label>
+                
+                <div class="d-flex flex-column gap-2" id="slot-selectors">
+                  <!-- Morning -->
+                  <div class="form-check p-2 ps-4 border rounded bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                      <input class="form-check-input ms-0 me-2" type="radio" name="mealSlotRadio" id="slotMorning" value="Morning" checked onchange="calculatePrice()">
+                      <label class="form-check-label fw-bold text-dark" for="slotMorning">
+                        Morning Breakfast
+                      </label>
+                      <small class="d-block text-muted ms-4">07:30 - 09:30 AM (Cutoff: 07:00 AM)</small>
+                    </div>
+                    <span class="badge bg-light text-dark border fs-6 fw-bold" id="price-morning-badge">25 ৳</span>
+                  </div>
+
+                  <!-- Noon -->
+                  <div class="form-check p-2 ps-4 border rounded bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                      <input class="form-check-input ms-0 me-2" type="radio" name="mealSlotRadio" id="slotNoon" value="Noon" onchange="calculatePrice()">
+                      <label class="form-check-label fw-bold text-dark" for="slotNoon">
+                        Noon Lunch
+                      </label>
+                      <small class="d-block text-muted ms-4">01:00 - 03:00 PM (Cutoff: 11:30 AM)</small>
+                    </div>
+                    <span class="badge bg-light text-dark border fs-6 fw-bold" id="price-noon-badge">50 ৳</span>
+                  </div>
+
+                  <!-- Night -->
+                  <div class="form-check p-2 ps-4 border rounded bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                      <input class="form-check-input ms-0 me-2" type="radio" name="mealSlotRadio" id="slotNight" value="Night" onchange="calculatePrice()">
+                      <label class="form-check-label fw-bold text-dark" for="slotNight">
+                        Night Dinner
+                      </label>
+                      <small class="d-block text-muted ms-4">08:00 - 10:00 PM (Cutoff: 06:30 PM)</small>
+                    </div>
+                    <span class="badge bg-light text-dark border fs-6 fw-bold" id="price-night-badge">55 ৳</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment Method Selection -->
+              <div class="mb-4">
+                <label class="form-label small fw-semibold text-secondary">Payment Method *</label>
+                <select class="form-select" id="book-payment-method">
+                  <option value="Campus Wallet">Campus Wallet (Deduct from balance)</option>
+                  <option value="bKash">bKash</option>
+                  <option value="Nagad">Nagad</option>
+                </select>
+              </div>
+
+              <!-- Price Summary & Checkout Button -->
+              <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded border">
+                <span class="fw-semibold text-dark">Payable Amount:</span>
+                <span class="fs-4 fw-bold text-primary" id="checkout-total">25 ৳</span>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary py-2 rounded-pill fw-bold" id="btnBookToken">
+                  Confirm &amp; Issue Digital Token Pass
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Token List & Daily Dining Menu (Right) -->
+        <div class="col-lg-7">
+          
+          <!-- Today's Mess Dining Menu Showcase -->
+          <div class="premium-card p-4 bg-white mb-4 border">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="badge bg-light text-dark border mb-1">Standard Mess Menu</span>
+                <h5 class="fw-bold text-dark mb-0">Daily Food Menu</h5>
+              </div>
+            </div>
+
+            <div class="row g-3" id="daily-menu-cards"></div>
+          </div>
+
+          <!-- My Digital Meal Tokens History -->
+          <div class="premium-card p-4 bg-white border">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3 gap-2">
+              <h5 class="fw-bold text-dark mb-0">My Meal Token Passes</h5>
+              
+              <div class="d-flex gap-2">
+                <select class="form-select form-select-sm" id="token-filter-status" onchange="renderMyTokens()" style="width: 130px;">
+                  <option value="">All</option>
+                  <option value="Active" selected>Active</option>
+                  <option value="Redeemed">Redeemed</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column gap-3" id="my-tokens-container"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: QR Pass Preview -->
+  <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border rounded-3 text-center p-3">
+        <div class="modal-header border-0 pb-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <h5 class="fw-bold mb-1" id="qr-modal-title">Morning Breakfast Token</h5>
+          <div class="font-mono text-dark fw-bold mb-2" id="qr-modal-id">TKN-0000</div>
+          
+          <div class="p-3 bg-white rounded border d-inline-block my-2">
+            <div id="modal-qr-container"></div>
+          </div>
+          
+          <div class="small text-muted mb-3" id="qr-modal-details">
+            Valid Today
+          </div>
+
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-primary rounded-pill px-4" id="btn-modal-print">
+              Print Slip
+            </button>
+            <button class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    let currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await DB.init();
+      currentUser = Auth.requireStudent();
+      if (!currentUser) return;
+
+      setupForm();
+      renderMenuCards();
+      renderMyTokens();
+    });
+
+    function setupForm() {
+      document.getElementById('display-wallet-bal').innerText = `${currentUser.walletBalance || 0} ৳`;
+      document.getElementById('display-resident-status').innerText = currentUser.residentStatus;
+      
+      const isPermanent = currentUser.residentStatus === 'Permanent Resident';
+      document.getElementById('pricing-tier-note').innerText = isPermanent 
+        ? 'Subsidized permanent resident dining tariff applied.' 
+        : 'Standard guest/non-resident dining tariff applied.';
+
+      App.populateHallDropdown('book-hall', currentUser.gender, currentUser.hallId);
+
+      setQuickDate(0);
+      calculatePrice();
+    }
+
+    function setQuickDate(offsetDays) {
+      const d = new Date();
+      d.setDate(d.getDate() + offsetDays);
+      const str = d.toISOString().slice(0, 10);
+      document.getElementById('book-date').value = str;
+      calculatePrice();
+    }
+
+    function getSelectedSlot() {
+      const radio = document.querySelector('input[name="mealSlotRadio"]:checked');
+      return radio ? radio.value : 'Morning';
+    }
+
+    function calculatePrice() {
+      const isPermanent = currentUser.residentStatus === 'Permanent Resident';
+      const slot = getSelectedSlot();
+      const settings = DB.getMealSettings();
+
+      const morningPrice = isPermanent ? settings.Morning.residentPrice : settings.Morning.nonResidentPrice;
+      const noonPrice = isPermanent ? settings.Noon.residentPrice : settings.Noon.nonResidentPrice;
+      const nightPrice = isPermanent ? settings.Night.residentPrice : settings.Night.nonResidentPrice;
+
+      document.getElementById('price-morning-badge').innerText = `${morningPrice} ৳`;
+      document.getElementById('price-noon-badge').innerText = `${noonPrice} ৳`;
+      document.getElementById('price-night-badge').innerText = `${nightPrice} ৳`;
+
+      let currentPrice = morningPrice;
+      if (slot === 'Noon') currentPrice = noonPrice;
+      if (slot === 'Night') currentPrice = nightPrice;
+
+      document.getElementById('checkout-total').innerText = `${currentPrice} ৳`;
+      return currentPrice;
+    }
+
+    function renderMenuCards() {
+      const settings = DB.getMealSettings();
+      const container = document.getElementById('daily-menu-cards');
+      container.innerHTML = '';
+
+      const items = [
+        { slot: 'Morning', ...settings.Morning },
+        { slot: 'Noon', ...settings.Noon },
+        { slot: 'Night', ...settings.Night }
+      ];
+
+      items.forEach(item => {
+        container.innerHTML += `
+          <div class="col-md-4">
+            <div class="p-3 rounded border bg-light h-100 d-flex flex-column">
+              <h6 class="fw-bold mb-1 text-dark">${item.name}</h6>
+              <small class="text-muted mb-2">${item.diningTime}</small>
+              <p class="small text-secondary mb-3 flex-grow-1">${item.menuDescription}</p>
+              <div class="border-top pt-2 mt-auto d-flex justify-content-between align-items-center small text-muted">
+                <span>Res: <strong>${item.residentPrice} ৳</strong></span>
+                <span>Guest: <strong>${item.nonResidentPrice} ৳</strong></span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderMyTokens() {
+      const statusFilter = document.getElementById('token-filter-status').value;
+      const tokens = DB.getMealTokens({ userId: currentUser.id, status: statusFilter });
+      const container = document.getElementById('my-tokens-container');
+      container.innerHTML = '';
+
+      if (tokens.length === 0) {
+        container.innerHTML = `
+          <div class="p-4 text-center text-muted border rounded bg-light">
+            <h6>No meal tokens found</h6>
+            <p class="small mb-0">Use the reservation form to book passes.</p>
+          </div>
+        `;
+        return;
+      }
+
+      tokens.forEach(t => {
+        const isRedeemed = t.status === 'Redeemed';
+        const isCancelled = t.status === 'Cancelled';
+        const statusBadge = isRedeemed ? 'bg-secondary' : (isCancelled ? 'bg-light text-danger border' : 'bg-dark');
+
+        const card = `
+          <div class="token-pass-card">
+            <div class="ticket-header d-flex justify-content-between align-items-center">
+              <div>
+                <span class="badge bg-white text-dark rounded-pill px-2 py-1 small fw-bold text-uppercase">${t.mealSlot} Pass</span>
+                <h6 class="fw-bold mb-0 mt-1">${t.hallName}</h6>
+              </div>
+              <div class="text-end">
+                <span class="badge ${statusBadge} rounded-pill px-3 py-1">${t.status}</span>
+                <div class="small text-white-50 mt-1">Valid: ${t.date}</div>
+              </div>
+            </div>
+
+            <div class="ticket-divider">
+              <div class="ticket-divider-line"></div>
+            </div>
+
+            <div class="p-3 bg-white">
+              <div class="row align-items-center gy-3">
+                <div class="col-auto">
+                  <div class="token-qr-wrap cursor-pointer" onclick="openQrModal('${t.tokenId}')" title="View QR">
+                    <div id="qr-${t.tokenId}"></div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="font-mono fw-bold text-dark fs-5 mb-1">${t.tokenId}</div>
+                  <div class="small text-secondary mb-1">
+                    Student: <strong>${t.studentName}</strong> (${t.studentId})
+                  </div>
+                  <div class="small text-muted mb-2">
+                    Paid: <strong>${t.price} ৳</strong> via ${t.paymentMethod}
+                    ${t.redeemedAt ? ` &bull; Redeemed: ${t.redeemedAt}` : ''}
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="App.printMealToken('${t.tokenId}')">
+                      Print Pass
+                    </button>
+                    <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="openQrModal('${t.tokenId}')">
+                      View QR
+                    </button>
+                    ${(!isRedeemed && !isCancelled) ? `
+                      <button class="btn btn-outline-danger btn-sm rounded-pill px-2" onclick="cancelTokenPrompt('${t.tokenId}')" title="Cancel Token">
+                        Cancel
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', card);
+
+        App.generateQRCanvas(t.tokenId, `qr-${t.tokenId}`, 85);
+      });
+    }
+
+    async function handleBookToken(e) {
+      e.preventDefault();
+      const hallId = document.getElementById('book-hall').value;
+      const hall = DB.getHallById(hallId);
+      const date = document.getElementById('book-date').value;
+      const slot = getSelectedSlot();
+      const price = calculatePrice();
+      const paymentMethod = document.getElementById('book-payment-method').value;
+
+      const btn = document.getElementById('btnBookToken');
+      btn.disabled = true;
+      btn.innerHTML = 'Issuing Token...';
+
+      try {
+        const token = DB.createMealToken({
+          userId: currentUser.id,
+          studentName: currentUser.name,
+          studentId: currentUser.studentId,
+          hallId: hall.id,
+          hallName: hall.name,
+          residentStatus: currentUser.residentStatus,
+          mealSlot: slot,
+          date: date,
+          price: price,
+          paymentMethod: paymentMethod
+        });
+
+        App.toast(`Token ${token.tokenId} issued successfully!`, 'success');
+        
+        currentUser = Auth.getUser();
+        document.getElementById('display-wallet-bal').innerText = `${currentUser.walletBalance || 0} ৳`;
+        renderMyTokens();
+
+        setTimeout(() => {
+          openQrModal(token.tokenId);
+        }, 300);
+
+      } catch (err) {
+        App.toast(err.message || 'Failed to book token', 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Confirm &amp; Issue Digital Token Pass';
+      }
+    }
+
+    function openQrModal(tokenId) {
+      const token = DB.getMealTokenById(tokenId);
+      if (!token) return;
+
+      document.getElementById('qr-modal-title').innerText = `${token.mealSlot} Meal Token Pass`;
+      document.getElementById('qr-modal-id').innerText = token.tokenId;
+      document.getElementById('qr-modal-details').innerText = `${token.hallName} &bull; Valid: ${token.date} &bull; ${token.price} ৳ (${token.status})`;
+      
+      App.generateQRCanvas(token.tokenId, 'modal-qr-container', 140);
+      document.getElementById('btn-modal-print').onclick = () => App.printMealToken(token.tokenId);
+
+      const modal = new bootstrap.Modal(document.getElementById('qrModal'));
+      modal.show();
+    }
+
+    function cancelTokenPrompt(tokenId) {
+      if (confirm('Cancel this token and receive wallet refund?')) {
+        try {
+          DB.cancelMealToken(tokenId, true);
+          currentUser = Auth.getUser();
+          document.getElementById('display-wallet-bal').innerText = `${currentUser.walletBalance || 0} ৳`;
+          renderMyTokens();
+          App.toast('Token cancelled and refunded.', 'success');
+        } catch (e) {
+          App.toast(e.message, 'danger');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
