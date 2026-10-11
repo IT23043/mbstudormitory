@@ -150,10 +150,3 @@ Because this project is built with vanilla HTML, CSS, JavaScript, and JSON:
 
 ---
 
-## Presentation Slides (Task 4)
-Open [`MBSTU_Dormitory_Presentation.pptx`](file:///d:/environment/Lab%20Final/MBSTU_Dormitory_Presentation.pptx) (also available as [`presentation.pptx`](file:///d:/environment/Lab%20Final/presentation.pptx)) in Microsoft PowerPoint or Google Slides.  
-Features:
-- **15 structured slides** in 16:9 Widescreen layout following the project assessment requirements.
-- Formatted with official MBSTU University Navy, Slate, and White academic aesthetic with embedded university crest logo.
-- Detailed comparison table: Traditional Manual Operations vs. MBSTU Dormitory.
-- Comprehensive presenter talking points and speaker notes included on every slide.
